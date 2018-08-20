@@ -6,7 +6,7 @@ from django.db.models.query import QuerySet
 from django.utils import timezone
 
 from django_task_queue.settings import BASE_DIR
-from task.models import TaskModel
+from task.models import TaskModel, Status
 from worker.settings import MAIN_MUTEX
 
 
@@ -80,11 +80,11 @@ class Worker(object):
         """
         print('[Worker] Task #%s started' % task.pk)
         task.start_time = timezone.now()
-        task.status = 1
+        task.status = Status.RUN
         task.save()
         os.system('python %s' % os.path.join(BASE_DIR, 'worker', 'task.py'))
         task.exec_time = timezone.now()
-        task.status = 2
+        task.status = Status.COMPLETED
         task.save()
         print('[Worker] Task #%s finished' % task.pk)
 
