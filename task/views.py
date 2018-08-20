@@ -8,7 +8,7 @@ from worker.settings import NEW_TASK_EVENT
 
 @csrf_exempt
 def create_task(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         task = TaskModel()
         task.save()
 
