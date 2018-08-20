@@ -1,34 +1,37 @@
 # Django Task Queue
 
-Прототип веб-сервиса по организации очереди задач.
+Prototype of the web service for organizing the task queue.
 
-Функциональность:
-1. `task/create_task` -  метод создающий задачу, которая добавляется в очередь, и пользователю возвращается номер задачи.
-2. `task/get_info/<int: task_id>` - возвращает статус задачи в формате json {'status:'', 'create_time":'', 'start_time':'', 'time_to_execute':''}.
-
-    Статусы:
-    - In Queue -- задача ждёт своей очереди на выполнение;
-    - Run -- произошел запуск задачи;
-    - Completed -- задача выполнена.
-3. Выполнение задачи представляет собой простой python-код (test.py):
+Functionality:
+1. `task / create_task` is a method that creates a task that is added to the queue, and the task number is returned to the user.
+2. `task / get_info / <int: task_id>` - returns the status of the task in the format json {'status:'', 'create_time":'', 'start_time':'', 'time_to_execute':''}.
+    Statuses:
+     - In Queue - the task is waiting for its turn to execute;
+     - Run - the task was started;
+     - Completed - the task is completed.
+3. The task execution is a simple python code (test.py):
     ```python
     import time
     import random
     time.sleep(random.randint(0,10))
     ```
 
-Обратите внимание:
-* можно создавать множество задач, но выполняться одновременно должно не более 2.
-* результаты записываются в локальную БД.
+Note:
+* You can create many tasks, but at the same time it should not exceed 2.
+* the results are written to the local database.
 
 
-Класс реализующий воркера `Worker` работает с использованием `asyncio`.
+The class implementing the worker `Worker` works with` asyncio`.
 
-Установка:
+Installation:
 ============
 ```
 $ pip3 install -r requirements.txt
 $ python3 manage.py migrate --run-syncdb
-$ python3 manage.py collectstatic
 $ python3 manage.py createsuperuser
+```
+Run:
+============
+```
+$ python3 manage.py runserver 0.0.0.0:8080 --insecure
 ```
