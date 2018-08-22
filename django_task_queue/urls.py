@@ -20,5 +20,4 @@ from django.contrib.auth.views import LoginView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^task/', include('task.urls')),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
