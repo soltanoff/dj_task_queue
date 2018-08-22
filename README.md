@@ -23,7 +23,7 @@ Note:
 * the results are written to the local database.
 
 
-The class implementing the worker `Worker` works with` asyncio`.
+The class implementing the `Worker` works with` asyncio`.
 
 Installation:
 ============
