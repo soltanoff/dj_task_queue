@@ -1,5 +1,6 @@
 import asyncio
 import os
+from asyncio import AbstractEventLoop
 from threading import Event, Thread
 
 from django.db.models.query import QuerySet
@@ -30,7 +31,8 @@ class Worker(object):
         :type new_task_event: Event
         """
         assert new_task_event is not None, 'Worker: no instance of the event adding new tasks'
-        self.__thread = Thread(target=self.__routine)
+        self.__thread = None  # type: Thread
+        self.__ioloop = None  # type: AbstractEventLoop
 
         self.__new_task_event = new_task_event
         self.__new_task_event.clear()
@@ -45,7 +47,7 @@ class Worker(object):
         task_list = []
         try:
             MAIN_MUTEX.acquire()
-            while True:
+            while self.enable:
                 task_list = TaskModel.objects.filter(status=0)[:self.TASK_LIMIT]  # type: QuerySet[TaskModel]
                 if not task_list:
                     self.__wait_new_process()
@@ -70,8 +72,7 @@ class Worker(object):
         except Exception as e:
             print('[WORKER_ERROR] %s' % e)
 
-    @staticmethod
-    async def __execute_task(task):
+    async def __execute_task(self, task):
         """
         Метод исполняющий активную задачу
         :param task: активная задача
@@ -82,7 +83,13 @@ class Worker(object):
         task.start_time = timezone.now()
         task.status = Status.RUN
         task.save()
-        os.system('python %s' % os.path.join(BASE_DIR, 'worker', 'task.py'))
+
+        await self.__ioloop.run_in_executor(
+            None,
+            os.system,
+            'python %s' % os.path.join(BASE_DIR, 'worker', 'test.py')
+        )
+
         task.exec_time = timezone.now()
         task.status = Status.COMPLETED
         task.save()
@@ -105,17 +112,26 @@ class Worker(object):
         """
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        ioloop = asyncio.get_event_loop()
+        self.__ioloop = asyncio.get_event_loop()
         try:
             while self.enable:
                 task_list = self.__get_process()
-                ioloop.run_until_complete(self.__asynchronous(task_list))
+                if len(task_list) > 0:
+                    self.__ioloop.run_until_complete(self.__asynchronous(task_list))
         finally:
-            ioloop.close()
+            self.__ioloop.close()
 
     def start(self):
         """
         Запуск воркера
         :return:
         """
-        self.__thread.start()
+        if self.__thread is None or not self.__thread.is_alive():
+            self.__new_task_event.clear()
+            self.__thread = Thread(target=self.__routine)
+            self.__thread.start()
+            self.enable = True
+
+    def disable(self):
+        self.enable = False
+        self.__thread = None

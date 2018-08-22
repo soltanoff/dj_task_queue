@@ -15,6 +15,8 @@ Functionality:
     import random
     time.sleep(random.randint(0,10))
     ```
+4. `task/start_workers` is a method that all `Worker`'s run.
+5. `task/desable_workers` is a method that disables all `Worker`'s.
 
 Note:
 * You can create many tasks, but at the same time it should not exceed 2.
