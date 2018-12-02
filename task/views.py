@@ -9,7 +9,7 @@ from worker.settings import NEW_TASK_EVENT
 
 
 @api_view(['POST'])
-@permission_classes(permissions.IsAuthenticated)
+@permission_classes((permissions.IsAuthenticated,))
 def create_task(request):
     task = TaskModel(status=Status.IN_QUEUE)
     task.save()
@@ -35,7 +35,7 @@ def get_info(request, task_id):
 
 
 @api_view(['POST'])
-@permission_classes(permissions.IsAdminUser)
+@permission_classes((permissions.IsAdminUser,))
 def start_workers(request):
     try:
         for x in WORKER_LIST:
@@ -46,7 +46,7 @@ def start_workers(request):
 
 
 @api_view(['POST'])
-@permission_classes(permissions.IsAdminUser)
+@permission_classes((permissions.IsAdminUser,))
 def disable_workers(request):
     try:
         for x in WORKER_LIST:
