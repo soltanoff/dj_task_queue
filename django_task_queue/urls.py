@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
+from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(title="Task API", description='all available urls for task api')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^task/', include('task.urls')),
+    url('^$', schema_view),
 ]
