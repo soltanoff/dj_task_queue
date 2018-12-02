@@ -3,6 +3,7 @@
 Prototype of the web service for organizing the task queue.
 
 Functionality:
+0. API schemas: `/`
 1. `task/create_task` is a method that creates a task that is added to the queue, and the task number is returned to the user.
 2. `task/get_info/<int: task_id>` - returns the status of the task in the format json {'status:'', 'create_time":'', 'start_time':'', 'time_to_execute':''}.
     Statuses:
