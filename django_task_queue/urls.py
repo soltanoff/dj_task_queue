@@ -20,7 +20,8 @@ from rest_framework.schemas import get_schema_view
 schema_view = get_schema_view(title="Task API", description='all available urls for task api')
 
 urlpatterns = [
+    url('^$', schema_view),
     url(r'^admin/', admin.site.urls),
     url(r'^task/', include('task.urls')),
-    url('^$', schema_view),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
